@@ -18,6 +18,6 @@ RUN useradd cloudera -d /home/cloudera -p cloudera
 RUN cd /home/cloudera; curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py; python get-pip.py
 RUN yum install  -y git
 RUN pip install --upgrade pip cm_client
-RUN cd /home/cloudera; git clone https://github.com/carrossoni/CDPDCTrial.git; chmod -R 777 ./CDPDCTrial
+RUN cd /home/cloudera; git clone https://github.com/duhizjame/CDP-Private-Trial.git; chmod -R 777 ./CDP-Private-Trial
 VOLUME [ "/sys/fs/cgroup" ]
 CMD ["/usr/sbin/init"]
