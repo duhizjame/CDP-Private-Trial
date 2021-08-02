@@ -80,6 +80,7 @@ yum repolist
 yum install -y cloudera-manager-agent cloudera-manager-daemons cloudera-manager-server
 
 ## THESE COMMANDS DO NOT WORK AS INTENDED
+
 # sed -i$(date +%s).bak '/^[^#]*server_host/s/^/# /' /etc/cloudera-scm-agent/config.ini
 # sed -i$(date +%s).bak '/^[^#]*listening_ip/s/^/# /' /etc/cloudera-scm-agent/config.ini
 # sed -i$(date +%s).bak "/^# server_host.*/i server_host=$(hostname)" /etc/cloudera-scm-agent/config.ini
@@ -104,7 +105,7 @@ rm -rf ~/mysql-connector-java-5.1.46*
 
 
 echo "-- Create DBs required by CM"
-cd /home/cloudera/CDPDCTrial
+cd /home/cloudera/CDP-Private-Trial/CDPDCTrial
 mysql -u root < scripts/create_db.sql
 
 echo "-- Secure MariaDB"
@@ -134,8 +135,8 @@ pip install psycopg2==2.7.5 --ignore-installed
 echo 'LC_ALL="en_US.UTF-8"' >> /etc/locale.conf
 /usr/pgsql-9.6/bin/postgresql96-setup initdb
 
-cat /home/cloudera/CDPDCTrial/conf/pg_hba.conf > /var/lib/pgsql/9.6/data/pg_hba.conf
-cat /home/cloudera/CDPDCTrial/conf/postgresql.conf > /var/lib/pgsql/9.6/data/postgresql.conf
+cat /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/pg_hba.conf > /var/lib/pgsql/9.6/data/pg_hba.conf
+cat /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/postgresql.conf > /var/lib/pgsql/9.6/data/postgresql.conf
 
 echo "--Enable and start pgsql"
 systemctl enable postgresql-9.6
@@ -187,10 +188,10 @@ echo "-- Now CM is started and the next step is to automate using the CM API"
 
 pip install --upgrade pip cm_client
 
-sed -i "s/YourHostname/`hostname -f`/g" ~/CDPDCTrial/scripts/create_cluster.py
-sed -i "s/YourHostname/`hostname -f`/g" ~/CDPDCTrial/scripts/create_cluster.py
+sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
+sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 
-python ~/CDPDCTrial/scripts/create_cluster.py ~/CDPDCTrial/conf/cdpsandbox.json
+python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/cdpsandbox.json
 
 sudo usermod cloudera -G hadoop
 sudo -u hdfs hdfs dfs -mkdir /user/cloudera
