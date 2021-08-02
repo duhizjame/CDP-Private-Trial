@@ -48,6 +48,8 @@ systemctl stop firewalld
 service firewalld stop
 setenforce 0
 sed -i 's/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+systemctl start ntpd
+systemctl restart network
 
 echo  "Disabling IPv6"
 echo "net.ipv6.conf.all.disable_ipv6 = 1
