@@ -39,10 +39,10 @@ sudo /etc/init.d/network restart
 echo "-- Configure networking"
 PUBLIC_IP=`curl https://api.ipify.org/`
 #hostnamectl set-hostname `hostname -f`
-sed -i$(date +%s).bak '/^[^#]*cloudera/s/^/# /' /etc/hosts
-sed -i$(date +%s).bak '/^[^#]*::1/s/^/# /' /etc/hosts
-echo "`host cloudera |grep address | awk '{print $4}'` `hostname` `hostname`" >> /etc/hosts
-#sed -i "s/HOSTNAME=.*/HOSTNAME=`hostname`/" /etc/sysconfig/network
+# sed -i$(date +%s).bak '/^[^#]*cloudera/s/^/# /' /etc/hosts
+# sed -i$(date +%s).bak '/^[^#]*::1/s/^/# /' /etc/hosts
+# echo "`host cloudera |grep address | awk '{print $4}'` `hostname` `hostname`" >> /etc/hosts
+# #sed -i "s/HOSTNAME=.*/HOSTNAME=`hostname`/" /etc/sysconfig/network
 systemctl disable firewalld
 systemctl stop firewalld
 service firewalld stop
@@ -79,10 +79,11 @@ yum repolist
 ## CM
 yum install -y cloudera-manager-agent cloudera-manager-daemons cloudera-manager-server
 
-sed -i$(date +%s).bak '/^[^#]*server_host/s/^/# /' /etc/cloudera-scm-agent/config.ini
-sed -i$(date +%s).bak '/^[^#]*listening_ip/s/^/# /' /etc/cloudera-scm-agent/config.ini
-sed -i$(date +%s).bak "/^# server_host.*/i server_host=$(hostname)" /etc/cloudera-scm-agent/config.ini
-sed -i$(date +%s).bak "/^# listening_ip=.*/i listening_ip=$(host cloudera |grep address | awk '{print $4}')" /etc/cloudera-scm-agent/config.ini
+## THESE COMMANDS DO NOT WORK AS INTENDED
+# sed -i$(date +%s).bak '/^[^#]*server_host/s/^/# /' /etc/cloudera-scm-agent/config.ini
+# sed -i$(date +%s).bak '/^[^#]*listening_ip/s/^/# /' /etc/cloudera-scm-agent/config.ini
+# sed -i$(date +%s).bak "/^# server_host.*/i server_host=$(hostname)" /etc/cloudera-scm-agent/config.ini
+# sed -i$(date +%s).bak "/^# listening_ip=.*/i listening_ip=$(host cloudera |grep address | awk '{print $4}')" /etc/cloudera-scm-agent/config.ini
 
 service cloudera-scm-agent restart
 
@@ -133,8 +134,8 @@ pip install psycopg2==2.7.5 --ignore-installed
 echo 'LC_ALL="en_US.UTF-8"' >> /etc/locale.conf
 /usr/pgsql-9.6/bin/postgresql96-setup initdb
 
-cat /root/CDPDCTrial/conf/pg_hba.conf > /var/lib/pgsql/9.6/data/pg_hba.conf
-cat /root/CDPDCTrial/conf/postgresql.conf > /var/lib/pgsql/9.6/data/postgresql.conf
+cat /home/cloudera/CDPDCTrial/conf/pg_hba.conf > /var/lib/pgsql/9.6/data/pg_hba.conf
+cat /home/cloudera/CDPDCTrial/conf/postgresql.conf > /var/lib/pgsql/9.6/data/postgresql.conf
 
 echo "--Enable and start pgsql"
 systemctl enable postgresql-9.6
@@ -164,13 +165,13 @@ mv /home/centos/*.parcel /home/centos/*.parcel.sha /opt/cloudera/parcel-repo/
 chown cloudera-scm:cloudera-scm /opt/cloudera/parcel-repo/*
 
 
-echo "-- Enable passwordless root login via rsa key"
+echo "-- Enable password/passwordless root login via rsa key"
 ssh-keygen -f ~/myRSAkey -t rsa -N ""
 mkdir ~/.ssh
 cat ~/myRSAkey.pub >> ~/.ssh/authorized_keys
 chmod 400 ~/.ssh/authorized_keys
 ssh-keyscan -H `hostname` >> ~/.ssh/known_hosts
-sed -i 's/.*PermitRootLogin.*/PermitRootLogin without-password/' /etc/ssh/sshd_config
+sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
 systemctl restart sshd
 
 echo "-- Start CM, it takes about 2 minutes to be ready"
