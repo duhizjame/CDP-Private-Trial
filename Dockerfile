@@ -14,6 +14,7 @@ EXPOSE 80 7182 7180 9000 9001
 RUN yum install -y net-tools
 RUN yum install -y mariadb
 RUN yum install -y ntp 
+RUN touch /etc/sysconfig/network
 RUN useradd cloudera -d /home/cloudera -p cloudera
 RUN cd /home/cloudera; curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py; python get-pip.py
 RUN yum install  -y git

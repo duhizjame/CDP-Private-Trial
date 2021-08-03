@@ -193,11 +193,12 @@ pip install --upgrade pip cm_client
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 
-python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/cdpsandbox.json
+# python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/cdpsandbox.json
 
-sudo usermod cloudera -G hadoop
-sudo -u hdfs hdfs dfs -mkdir /user/cloudera
-sudo -u hdfs hdfs dfs -chown cloudera:hadoop /user/cloudera
-sudo -u hdfs hdfs dfs -mkdir /user/admin
-sudo -u hdfs hdfs dfs -chown admin:hadoop /user/admin
-sudo -u hdfs hdfs dfs -chmod -R 0755 /tmp
+# usermod cloudera -G hadoop
+# usermod --shell /bin/bash hdfs  
+# hdfs dfs -mkdir /user/cloudera
+# hdfs dfs -chown cloudera:hadoop /user/cloudera
+# hdfs dfs -mkdir /user/admin
+# hdfs dfs -chown admin:hadoop /user/admin
+# hdfs dfs -chmod -R 0755 /tmp
