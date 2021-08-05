@@ -11,14 +11,14 @@ echo never > /sys/kernel/mm/transparent_hugepage/defrag
 echo "echo never > /sys/kernel/mm/transparent_hugepage/enabled" >> /etc/rc.d/rc.local
 echo "echo never > /sys/kernel/mm/transparent_hugepage/defrag" >> /etc/rc.d/rc.local
 # add tuned optimization https://www.cloudera.com/documentation/enterprise/6/6.2/topics/cdh_admin_performance.html
-echo  "vm.swappiness = 1" >> /etc/sysctl.conf
-sysctl vm.swappiness=1
+echo  "vm.swappiness = 0" >> /etc/sysctl.conf
+sysctl vm.swappiness=0
 timedatectl set-timezone UTC
 
 echo "-- Install Java OpenJDK8 and other tools"
 yum install -y java-1.8.0-openjdk-devel vim wget curl git bind-utils rng-tools
 yum install -y epel-release
-yum install -y python-pip
+# yum install -y python-pip
 
 cp /usr/lib/systemd/system/rngd.service /etc/systemd/system/
 systemctl daemon-reload
@@ -86,7 +86,9 @@ yum install -y cloudera-manager-agent cloudera-manager-daemons cloudera-manager-
 # sed -i$(date +%s).bak '/^[^#]*server_host/s/^/# /' /etc/cloudera-scm-agent/config.ini
 # sed -i$(date +%s).bak '/^[^#]*listening_ip/s/^/# /' /etc/cloudera-scm-agent/config.ini
 # sed -i$(date +%s).bak "/^# server_host.*/i server_host=$(hostname)" /etc/cloudera-scm-agent/config.ini
-# sed -i$(date +%s).bak "/^# listening_ip=.*/i listening_ip=$(host cloudera |grep address | awk '{print $4}')" /etc/cloudera-scm-agent/config.ini
+# sed -i$(date +%s).bak "/^# listening_ip=.*/i listening_ip=172.17.0.2" /etc/cloudera-scm-agent/config.ini
+sed -i '' -e 's/server_host=.*/server_host=cloudera/' /etc/cloudera-scm-agent/config.ini
+sed -i '' -e 's/# listening_ip=.*/listening_ip=172.17.0.2/' /etc/cloudera-scm-agent/config.ini
 
 service cloudera-scm-agent restart
 
@@ -193,12 +195,16 @@ pip install --upgrade pip cm_client
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 
-# python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/cdpsandbox.json
+# python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/.json
 
-# usermod cloudera -G hadoop
-# usermod --shell /bin/bash hdfs  
-# hdfs dfs -mkdir /user/cloudera
-# hdfs dfs -chown cloudera:hadoop /user/cloudera
-# hdfs dfs -mkdir /user/admin
-# hdfs dfs -chown admin:hadoop /user/admin
-# hdfs dfs -chmod -R 0755 /tmp
+rm -f /opt/cloudera/parcel-repo/*
+
+
+usermod cloudera -G hadoop
+usermod --shell /bin/bash hdfs  
+hdfs dfs -mkdir /user/cloudera
+hdfs dfs -chown cloudera:hadoop /user/cloudera
+hdfs dfs -mkdir /user/admin
+hdfs dfs -chown admin:hadoop /user/admin
+hdfs dfs -chmod -R 0755 /tmp
+
