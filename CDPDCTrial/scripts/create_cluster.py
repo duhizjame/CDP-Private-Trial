@@ -40,12 +40,12 @@ def wait(cmd, timeout=None):
 
 cm_client.configuration.username = 'admin'
 cm_client.configuration.password = 'admin'
-api_client = cm_client.ApiClient("http://cloudera:7180/api/v40")
+api_client = cm_client.ApiClient("http://cloudera:7180/api/v42")
 
 cm_api = cm_client.ClouderaManagerResourceApi(api_client)
 
 # accept trial licence
-m_api.begin_trial()
+cm_api.begin_trial()
 
 # Install CM Agent on host
 with open ("/root/myRSAkey", "r") as f:
@@ -55,7 +55,7 @@ instargs = cm_client.ApiHostInstallArguments(
     host_names=['YourHostname'], 
     user_name='root', 
     private_key=key, 
-    cm_repo_url='https://archive.cloudera.com/cm7/7.1.4/',
+    cm_repo_url='https://archive.cloudera.com/cm7/7.1.7/',
     java_install_strategy='NONE', 
     ssh_port=22, 
     passphrase='')
