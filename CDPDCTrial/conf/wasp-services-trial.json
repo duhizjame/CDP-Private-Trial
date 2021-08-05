@@ -1,0 +1,118 @@
+{
+    "cdhVersion" : "7.1.7",
+    "displayName" : "wasp-cluster",
+    "cmVersion" : "7.1.4",
+    "repositories" : [ "https://archive.cloudera.com/cdh7/7.1.7/parcels/", "https://archive.cloudera.com/p/cdh7/{latest_supported}/parcels/", "https://archive.cloudera.com/cdh7/{latest_supported}/parcels/", "https://archive.cloudera.com/p/cdh6/{latest_supported}/parcels/", "https://archive.cloudera.com/cdh6/{latest_supported}/parcels/", "https://archive.cloudera.com/p/cdh5/parcels/latest", "https://archive.cloudera.com/cdh5/parcels/5.16/", "https://parcels.repos.intel.com/mkl/latest", "https://archive.cloudera.com/accumulo-c5/parcels/latest/", "https://archive.cloudera.com/accumulo6/6.1/parcels/", "https://archive.cloudera.com/kafka/parcels/latest/", "http://archive.cloudera.com/kudu/parcels/latest/", "https://archive.cloudera.com/sqoop-teradata-connector1/latest/parcels/", "https://archive.cloudera.com/sqoop-connectors/parcels/latest/", "https://archive.cloudera.com/sqoop-netezza-connector1/latest/" ],
+    "products" : [ {
+      "version" : "7.1.7-1.cdh7.1.7.p0.15945976",
+      "product" : "CDH"
+    } ],
+    "services" : [ {
+      "refName" : "hdfs",
+      "serviceType" : "HDFS",
+      "serviceConfigs" : [ {
+        "name" : "service_health_suppression_hdfs_under_replicated_blocks",
+        "value" : "true"
+      } ],
+      "roleConfigGroups" : [ {
+        "refName" : "hdfs-NAMENODE-BASE",
+        "roleType" : "NAMENODE",
+        "base" : true
+      }, {
+        "refName" : "hdfs-SECONDARYNAMENODE-BASE",
+        "roleType" : "SECONDARYNAMENODE",
+        "base" : true
+      }, {
+        "refName" : "hdfs-DATANODE-BASE",
+        "roleType" : "DATANODE",
+        "base" : true
+      }, {
+        "refName" : "hdfs-GATEWAY-BASE",
+        "roleType" : "GATEWAY",
+        "base" : true
+      } ]
+    }, {
+      "refName" : "zookeeper",
+      "serviceType" : "ZOOKEEPER",
+      "roleConfigGroups" : [ {
+        "refName" : "zookeeper-SERVER-BASE",
+        "roleType" : "SERVER",
+        "base" : true
+      } ]
+    }, {
+      "refName" : "kafka",
+      "serviceType" : "KAFKA",
+      "serviceConfigs" : [ {
+        "name" : "hdfs_service",
+        "ref" : "hdfs"
+      }, {
+        "name" : "zookeeper_service",
+        "ref" : "zookeeper"
+      } ],
+      "roleConfigGroups" : [ {
+        "refName" : "kafka-KAFKA_BROKER-BASE",
+        "roleType" : "KAFKA_BROKER",
+        "base" : true
+      } ]
+    }, {
+      "refName" : "hbase",
+      "serviceType" : "HBASE",
+      "serviceConfigs" : [ {
+        "name" : "zookeeper_service",
+        "ref" : "zookeeper"
+      }, {
+        "name" : "hdfs_service",
+        "ref" : "hdfs"
+      } ],
+      "roleConfigGroups" : [ {
+        "refName" : "hbase-REGIONSERVER-BASE",
+        "roleType" : "REGIONSERVER",
+        "base" : true
+      }, {
+        "refName" : "hbase-MASTER-BASE",
+        "roleType" : "MASTER",
+        "base" : true
+      } ]
+    }, {
+      "refName" : "yarn",
+      "serviceType" : "YARN",
+      "serviceConfigs" : [ {
+        "name" : "zookeeper_service",
+        "ref" : "zookeeper"
+      }, {
+        "name" : "hdfs_service",
+        "ref" : "hdfs"
+      } ],
+      "roleConfigGroups" : [ {
+        "refName" : "yarn-RESOURCEMANAGER-BASE",
+        "roleType" : "RESOURCEMANAGER",
+        "base" : true
+      }, {
+        "refName" : "yarn-NODEMANAGER-BASE",
+        "roleType" : "NODEMANAGER",
+        "base" : true
+      }, {
+        "refName" : "yarn-GATEWAY-BASE",
+        "roleType" : "GATEWAY",
+        "base" : true
+      }, {
+        "refName" : "yarn-JOBHISTORY-BASE",
+        "roleType" : "JOBHISTORY",
+        "base" : true
+      } ]
+    } ],
+    "hostTemplates" : [ {
+      "refName" : "wasp-bare-services",
+      "cardinality" : 0,
+      "roleConfigGroupsRefNames" : [ "hbase-MASTER-BASE", "hbase-REGIONSERVER-BASE", "hdfs-DATANODE-BASE", "hdfs-GATEWAY-BASE", "hdfs-NAMENODE-BASE", "hdfs-SECONDARYNAMENODE-BASE", "kafka-KAFKA_BROKER-BASE", "yarn-GATEWAY-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE" ]
+    } ],
+    "instantiator" : {
+      "clusterName" : "wasp-cluster",
+      "hosts" : [ {
+        "hostName" : "cloudera",
+        "hostTemplateRefName" : "wasp-bare-services"
+      }],
+      "lenient" : false
+    }
+  }
+  
