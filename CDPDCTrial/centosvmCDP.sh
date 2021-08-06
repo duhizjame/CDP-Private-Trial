@@ -1,7 +1,7 @@
 #! /bin/bash
 echo "-- Configure user cloudera with passwordless"
-useradd cloudera -d /home/cloudera -p cloudera
-sudo usermod -aG wheel cloudera
+# useradd cloudera -d /home/cloudera -p cloudera
+# usermod -aG wheel cloudera
 cp /etc/sudoers /etc/sudoers.bkp
 rm -rf /etc/sudoers
 sed '/^#includedir.*/a cloudera ALL=(ALL) NOPASSWD: ALL' /etc/sudoers.bkp > /etc/sudoers
@@ -11,9 +11,10 @@ echo never > /sys/kernel/mm/transparent_hugepage/defrag
 echo "echo never > /sys/kernel/mm/transparent_hugepage/enabled" >> /etc/rc.d/rc.local
 echo "echo never > /sys/kernel/mm/transparent_hugepage/defrag" >> /etc/rc.d/rc.local
 # add tuned optimization https://www.cloudera.com/documentation/enterprise/6/6.2/topics/cdh_admin_performance.html
-echo  "vm.swappiness = 0" >> /etc/sysctl.conf
-sysctl vm.swappiness=0
+echo  "vm.swappiness = 1" >> /etc/sysctl.conf
+sysctl vm.swappiness=1
 timedatectl set-timezone UTC
+echo "no response from systemd??"
 
 echo "-- Install Java OpenJDK8 and other tools"
 yum install -y java-1.8.0-openjdk-devel vim wget curl git bind-utils rng-tools
@@ -34,7 +35,7 @@ npm install forever -g
 echo "server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4" >> /etc/chrony.conf
 systemctl restart chronyd
 
-sudo /etc/init.d/network restart
+/etc/init.d/network restart
 
 echo "-- Configure networking"
 PUBLIC_IP=`curl https://api.ipify.org/`
@@ -158,16 +159,16 @@ EOF
 
 echo "-- Install CSDs"
 
-# install local CSDs
-mv ~/*.jar /opt/cloudera/csd/
-mv /home/centos/*.jar /opt/cloudera/csd/
-chown cloudera-scm:cloudera-scm /opt/cloudera/csd/*
-chmod 644 /opt/cloudera/csd/*
+# # install local CSDs
+# mv ~/*.jar /opt/cloudera/csd/
+# mv /home/centos/*.jar /opt/cloudera/csd/
+# chown cloudera-scm:cloudera-scm /opt/cloudera/csd/*
+# chmod 644 /opt/cloudera/csd/*
 
-echo "-- Install local parcels"
-mv ~/*.parcel ~/*.parcel.sha /opt/cloudera/parcel-repo/
-mv /home/centos/*.parcel /home/centos/*.parcel.sha /opt/cloudera/parcel-repo/
-chown cloudera-scm:cloudera-scm /opt/cloudera/parcel-repo/*
+# echo "-- Install local parcels"
+# mv ~/*.parcel ~/*.parcel.sha /opt/cloudera/parcel-repo/
+# mv /home/centos/*.parcel /home/centos/*.parcel.sha /opt/cloudera/parcel-repo/
+# chown cloudera-scm:cloudera-scm /opt/cloudera/parcel-repo/*
 
 
 echo "-- Enable password/passwordless root login via rsa key"
@@ -179,14 +180,14 @@ ssh-keyscan -H `hostname` >> ~/.ssh/known_hosts
 sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
 systemctl restart sshd
 
-echo "-- Start CM, it takes about 2 minutes to be ready"
-systemctl start cloudera-scm-server
+# echo "-- Start CM, it takes about 2 minutes to be ready"
+# systemctl start cloudera-scm-server
 
-while [ `curl -s -X GET -u "admin:admin"  http://localhost:7180/api/version` -z ] ;
-    do
-    echo "waiting 10s for CM to come up..";
-    sleep 10;
-done
+# while [ `curl -s -X GET -u "admin:admin"  http://localhost:7180/api/version` -z ] ;
+#     do
+#     echo "waiting 10s for CM to come up..";
+#     sleep 10;
+# done
 
 echo "-- Now CM is started and the next step is to automate using the CM API"
 
@@ -195,16 +196,16 @@ pip install --upgrade pip cm_client
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 
-python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/wasp-services-trial.json
+# python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/wasp-services-trial.json
 
-rm -f /opt/cloudera/parcel-repo/*
+# rm -f /opt/cloudera/parcel-repo/*
 
 
-usermod cloudera -G hadoop
-usermod --shell /bin/bash hdfs  
-hdfs dfs -mkdir /user/cloudera
-hdfs dfs -chown cloudera:hadoop /user/cloudera
-hdfs dfs -mkdir /user/admin
-hdfs dfs -chown admin:hadoop /user/admin
-hdfs dfs -chmod -R 0755 /tmp
+# usermod cloudera -G hadoop
+# usermod --shell /bin/bash hdfs  
+# hdfs dfs -mkdir /user/cloudera
+# hdfs dfs -chown cloudera:hadoop /user/cloudera
+# hdfs dfs -mkdir /user/admin
+# hdfs dfs -chown admin:hadoop /user/admin
+# hdfs dfs -chmod -R 0755 /tmp
 

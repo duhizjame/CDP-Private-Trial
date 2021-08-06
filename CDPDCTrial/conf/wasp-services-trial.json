@@ -19,18 +19,10 @@
         "roleType" : "NAMENODE",
         "base" : true
       }, {
-        "refName" : "hdfs-SECONDARYNAMENODE-BASE",
-        "roleType" : "SECONDARYNAMENODE",
-        "base" : true
-      }, {
         "refName" : "hdfs-DATANODE-BASE",
         "roleType" : "DATANODE",
         "base" : true
-      }, {
-        "refName" : "hdfs-GATEWAY-BASE",
-        "roleType" : "GATEWAY",
-        "base" : true
-      } ]
+      }]
     }, {
       "refName" : "zookeeper",
       "serviceType" : "ZOOKEEPER",
@@ -91,20 +83,16 @@
         "refName" : "yarn-NODEMANAGER-BASE",
         "roleType" : "NODEMANAGER",
         "base" : true
-      }, {
-        "refName" : "yarn-GATEWAY-BASE",
-        "roleType" : "GATEWAY",
-        "base" : true
-      }, {
+      },{
         "refName" : "yarn-JOBHISTORY-BASE",
-        "roleType" : "JOBHISTORY",
+        "roleType" : "JOBHISTOY",
         "base" : true
       } ]
     } ],
     "hostTemplates" : [ {
       "refName" : "wasp-bare-services",
       "cardinality" : 0,
-      "roleConfigGroupsRefNames" : [ "hbase-MASTER-BASE", "hbase-REGIONSERVER-BASE", "hdfs-DATANODE-BASE", "hdfs-GATEWAY-BASE", "hdfs-NAMENODE-BASE", "hdfs-SECONDARYNAMENODE-BASE", "kafka-KAFKA_BROKER-BASE", "yarn-GATEWAY-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE" ]
+      "roleConfigGroupsRefNames" : [ "hbase-MASTER-BASE", "hbase-REGIONSERVER-BASE", "hdfs-DATANODE-BASE", "hdfs-NAMENODE-BASE", "kafka-KAFKA_BROKER-BASE", "yarn-GATEWAY-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE" ]
     } ],
     "instantiator" : {
       "clusterName" : "wasp-cluster",
