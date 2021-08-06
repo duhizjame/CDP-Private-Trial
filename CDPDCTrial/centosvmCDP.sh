@@ -1,7 +1,7 @@
 #! /bin/bash
 echo "-- Configure user cloudera with passwordless"
-# useradd cloudera -d /home/cloudera -p cloudera
-# usermod -aG wheel cloudera
+useradd cloudera -d /home/cloudera -p cloudera
+usermod -aG wheel cloudera
 cp /etc/sudoers /etc/sudoers.bkp
 rm -rf /etc/sudoers
 sed '/^#includedir.*/a cloudera ALL=(ALL) NOPASSWD: ALL' /etc/sudoers.bkp > /etc/sudoers
@@ -17,23 +17,22 @@ timedatectl set-timezone UTC
 echo "no response from systemd??"
 
 echo "-- Install Java OpenJDK8 and other tools"
-yum install -y java-1.8.0-openjdk-devel vim wget curl git bind-utils rng-tools
-yum install -y epel-release
-# yum install -y python-pip
+# apt-get install -y java-1.8.0-openjdk-devel vim wget curl
+# apt-get install -y python-pip
 
-cp /usr/lib/systemd/system/rngd.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl start rngd
-systemctl enable rngd
+# cp /usr/lib/systemd/system/rngd.service /etc/systemd/system/
+# systemctl daemon-reload
+# systemctl start rngd
+# systemctl enable rngd
 
 echo "-- Installing requirements for Stream Messaging Manager"
-yum install -y gcc-c++ make
+apt-get install -y gcc-c++ make
 curl -sL https://rpm.nodesource.com/setup_10.x | sudo -E bash -
-yum install nodejs -y
+apt-get install nodejs -y
 npm install forever -g
 
-echo "server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4" >> /etc/chrony.conf
-systemctl restart chronyd
+# echo "server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4" >> /etc/chrony.conf
+# systemctl restart chronyd
 
 /etc/init.d/network restart
 
@@ -42,15 +41,15 @@ PUBLIC_IP=`curl https://api.ipify.org/`
 #hostnamectl set-hostname `hostname -f`
 # sed -i$(date +%s).bak '/^[^#]*cloudera/s/^/# /' /etc/hosts
 # sed -i$(date +%s).bak '/^[^#]*::1/s/^/# /' /etc/hosts
-# echo "`host cloudera |grep address | awk '{print $4}'` `hostname` `hostname`" >> /etc/hosts
+echo "`host cloudera | grep address | awk '{print $4}'` `hostname` `hostname`" >> /etc/hosts
 # #sed -i "s/HOSTNAME=.*/HOSTNAME=`hostname`/" /etc/sysconfig/network
-systemctl disable firewalld
-systemctl stop firewalld
-service firewalld stop
+systemctl disable ufw
+systemctl stop ufw
+service ufw stop
 setenforce 0
-sed -i 's/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-systemctl start ntpd
-systemctl restart network
+# sed -i 's/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+# systemctl start ntpd
+# systemctl restart network
 
 echo  "Disabling IPv6"
 echo "net.ipv6.conf.all.disable_ipv6 = 1
@@ -63,24 +62,21 @@ echo "-- Install CM and MariaDB"
 
 # CM 7
 cd /
-wget https://archive.cloudera.com/cm7/7.4.4/redhat7/yum/cloudera-manager-trial.repo -P /etc/yum.repos.d/
-
+# wget https://archive.cloudera.com/cm7/7.4.4/redhat7/apt-get/cloudera-manager-trial.repo -P /etc/apt-get.repos.d/
+RUN add-apt-repository "deb [arch=amd64] http://archive.cloudera.com/cm7/7.4.4/ubuntu1804/apt bionic-cm7.4.4 contrib"
 # MariaDB 10.1
-cat - >/etc/yum.repos.d/MariaDB.repo <<EOF
-[mariadb]
-name = MariaDB
-baseurl = http://yum.mariadb.org/10.1/centos7-amd64
-gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
-gpgcheck=1
-EOF
+# cat - >/etc/apt-get.repos.d/MariaDB.repo <<EOF
+# [mariadb]
+# name = MariaDB
+# baseurl = http://apt-get.mariadb.org/10.1/centos7-amd64
+# gpgkey=https://apt-get.mariadb.org/RPM-GPG-KEY-MariaDB
+# gpgcheck=1
+# EOF
+apt-get install -y mariadb-server mariadb-client
 
-
-yum clean all
-rm -rf /var/cache/yum/
-yum repolist
 
 ## CM
-yum install -y cloudera-manager-agent cloudera-manager-daemons cloudera-manager-server
+apt-get install -y cloudera-manager-agent cloudera-manager-daemons cloudera-manager-server
 
 ## THESE COMMANDS DO NOT WORK AS INTENDED
 
@@ -94,7 +90,7 @@ sed -i '' -e 's/# listening_ip=.*/listening_ip=172.17.0.2/' /etc/cloudera-scm-ag
 service cloudera-scm-agent restart
 
 ## MariaDB
-yum install -y MariaDB-server MariaDB-client
+apt-get install -y MariaDB-server MariaDB-client
 cat conf/mariadb.config > /etc/my.cnf
 
 echo "--Enable and start MariaDB"
@@ -120,7 +116,7 @@ echo "-- Prepare CM database 'scm'"
 /opt/cloudera/cm/schema/scm_prepare_database.sh mysql scm scm cloudera
 
 ## PostgreSQL
-#yum install -y postgresql-server python-pip
+#apt-get install -y postgresql-server python-pip
 #pip install psycopg2==2.7.5 --ignore-installed
 #echo 'LC_ALL="en_US.UTF-8"' >> /etc/locale.conf
 #sudo su -l postgres -c "postgresql-setup initdb"
@@ -132,9 +128,9 @@ echo "-- Prepare CM database 'scm'"
 
 
 ## PostgreSQL see: https://www.postgresql.org/download/linux/redhat/
-yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-yum install -y postgresql96
-yum install -y postgresql96-server
+apt-get install -y https://download.postgresql.org/pub/repos/apt-get/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+apt-get install -y postgresql-9.6
+apt-get install -y postgresql-client-9.6
 pip install psycopg2==2.7.5 --ignore-installed
 
 echo 'LC_ALL="en_US.UTF-8"' >> /etc/locale.conf
