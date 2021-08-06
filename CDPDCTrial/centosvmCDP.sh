@@ -62,7 +62,7 @@ echo "-- Install CM and MariaDB"
 
 # CM 7
 cd /
-wget https://archive.cloudera.com/cm7/7.1.4/redhat7/yum/cloudera-manager-trial.repo -P /etc/yum.repos.d/
+wget https://archive.cloudera.com/cm7/7.4.4/redhat7/yum/cloudera-manager-trial.repo -P /etc/yum.repos.d/
 
 # MariaDB 10.1
 cat - >/etc/yum.repos.d/MariaDB.repo <<EOF
@@ -195,7 +195,7 @@ pip install --upgrade pip cm_client
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 sed -i "s/YourHostname/`hostname -f`/g" /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py
 
-# python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/.json
+python /home/cloudera/CDP-Private-Trial/CDPDCTrial/scripts/create_cluster.py /home/cloudera/CDP-Private-Trial/CDPDCTrial/conf/wasp-services-trial.json
 
 rm -f /opt/cloudera/parcel-repo/*
 

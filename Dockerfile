@@ -16,6 +16,10 @@ RUN yum install -y mariadb
 RUN yum install -y ntp 
 RUN yum install -y openssh-server openssh-client
 RUN touch /etc/sysconfig/network
+RUN cd /; wget https://archive.cloudera.com/cm7/7.4.4/redhat7/yum/cloudera-manager-trial.repo -P /etc/yum.repos.d/
+RUN yum install -y cloudera-manager-agent cloudera-manager-daemons cloudera-manager-server; \
+    sed -i '' -e 's/server_host=.*/server_host=cloudera/' /etc/cloudera-scm-agent/config.ini; \
+    sed -i '' -e 's/# listening_ip=.*/listening_ip=172.17.0.2/' /etc/cloudera-scm-agent/config.ini 
 RUN useradd cloudera -d /home/cloudera -p cloudera
 RUN cd /home/cloudera; curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py; python get-pip.py;
 RUN yum install  -y git
